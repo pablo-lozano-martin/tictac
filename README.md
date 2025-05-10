@@ -2,7 +2,7 @@
 
 A web-based Tic Tac Toe game where you can play against different AI models, or watch AIs compete against each other in exciting machine learning battles!
 
-![Tic Tac Toe AI Arena Screenshot](./screenshot.png) 
+![Tic Tac Toe AI Arena Screenshot](./assets/screenshot.png) 
 
 ## ✨ Features
 
