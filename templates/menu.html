@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic Tac Toe - Menu</title>
+    <style>
+        body { 
+            font-family: 'Courier New', Courier, monospace; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; /* Center vertically */
+            align-items: center; 
+            min-height: 100vh; /* Full viewport height */
+            margin: 0; 
+            background-color: #000000; /* Black background */
+            color: #FFFFFF; /* White text */
+        }
+        h1 {
+            color: #00FF00; /* Green for heading */
+            margin-bottom: 20px; /* Reduced margin */
+            font-size: 3em;
+        }
+        .player-selection-area {
+            display: flex; /* Arrange player selectors side-by-side */
+            justify-content: center;
+            align-items: flex-start; /* Align items at the top */
+            gap: 20px; /* Space between player selectors */
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .player-selector {
+            margin: 0; /* Removed individual margin */
+            padding: 15px;
+            border: 1px solid #00FF00;
+            background-color: #111;
+            min-width: 220px; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .player-selector p {
+            color: #00FF00;
+            font-size: 1.2em;
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+        .player-selector a button, .player-selector button { /* Style for both link buttons and regular buttons if any */
+            padding: 10px 20px;
+            font-size: 1em;
+            background-color: #222;
+            color: #FFFFFF;
+            border: 1px solid #FFFFFF;
+            cursor: pointer;
+            width: 100%; /* Make button fill selector width */
+            font-family: 'Courier New', Courier, monospace;
+        }
+        .player-selector a button:hover, .player-selector button:hover {
+            background-color: #00FF00;
+            color: #000;
+            border-color: #000;
+        }
+        .player-selector a {
+            text-decoration: none;
+            width: 100%; /* Ensure link takes full width for button */
+        }
+
+        .start-game-button a button { 
+            padding: 15px 30px; 
+            font-size: 1.5em; 
+            cursor: pointer; 
+            background-color: #002200; /* Darker green for start */
+            color: #00FF00;
+            border: 2px solid #00FF00;
+            font-family: 'Courier New', Courier, monospace;
+            text-decoration: none;
+            margin-top: 10px; /* Space above start button */
+        }
+        .start-game-button a button:hover {
+            background-color: #00FF00;
+            color: #000000;
+        }
+        .start-game-button a {
+            text-decoration: none;
+        }
+        .flashes { 
+            list-style-type: none; 
+            padding: 0; 
+            position: fixed; /* Keep flashes at the bottom */
+            bottom: 10px; 
+            width: 80%; 
+            max-width: 600px; 
+            left: 50%; 
+            transform: translateX(-50%);
+            text-align: center;
+        }
+        .flashes li { 
+            padding: 10px; 
+            margin-bottom: 5px; 
+            border-radius: 0px; 
+            font-size: 0.9em; 
+        }
+        /* Flash message styles from index.html for consistency */
+        .flashes .error { background-color: #330000; color: #FF6666; border: 1px solid #FF0000; }
+        .flashes .success { background-color: #002200; color: #66FF66; border: 1px solid #00FF00; }
+        .flashes .info { background-color: #000033; color: #6666FF; border: 1px solid #0000FF; }
+        .flashes .warning { background-color: #333300; color: #FFFF66; border: 1px solid #FFFF00; }
+
+    </style>
+</head>
+<body>
+    <h1>Tic Tac Toe</h1>
+
+    <div class="player-selection-area">
+        <div class="player-selector">
+            <p>Player 1 (X)</p>
+            <a href="{{ url_for('toggle_player_type', player_symbol='X') }}">
+                <button type="button">{{ player_X_type }}</button>
+            </a>
+        </div>
+        <div class="player-selector">
+            <p>Player 2 (O)</p>
+            <a href="{{ url_for('toggle_player_type', player_symbol='O') }}">
+                <button type="button">{{ player_O_type }}</button>
+            </a>
+        </div>
+    </div>
+
+    <div class="start-game-button">
+        <a href="{{ url_for('start_selected_game') }}"><button>Start Game</button></a>
+    </div>
+    
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <ul class="flashes">
+        {% for category, message_text in messages %}
+          <li class="{{ category }}">{{ message_text }}</li>
+        {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+</body>
+</html>

@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% if trigger_ai_move and not game_over %}
+    <meta http-equiv="refresh" content="0.5;url={{ url_for('execute_ai_move') }}">
+    {% endif %}
+    <title>Tic Tac Toe vs Llama</title>
+    <style>
+        body { 
+            font-family: 'Courier New', Courier, monospace; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            margin-top: 20px; 
+            background-color: #000000; /* Black background */
+            color: #FFFFFF; /* White text */
+        }
+        h1 {
+            color: #00FF00; /* Green for heading */
+        }
+        .board { 
+            display: grid; 
+            grid-template-columns: repeat(3, 100px); 
+            grid-template-rows: repeat(3, 100px); 
+            gap: 5px; 
+            margin-bottom: 20px; 
+            border: 2px solid #00FF00; /* Green border for the board */
+            padding: 5px;
+        }
+        .cell { 
+            width: 100px; 
+            height: 100px; 
+            background-color: #111111; /* Dark grey cell background */
+            border: 1px solid #00FF00; /* Green cell border */
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            font-size: 3em; /* Larger font for X/O */
+            cursor: pointer; 
+            text-decoration: none; 
+            color: #FFFFFF; /* White for empty cell text (if any) or links */
+        }
+        .cell:hover { 
+            background-color: #222222; /* Slightly lighter on hover */
+            border-color: #FFFFFF;
+        }
+        .cell.X { 
+            color: #00FF00; /* Green for X */
+            cursor: default;
+        }
+        .cell.O { 
+            color: #00FFFF; /* Cyan for O */
+            cursor: default;
+        }
+        .message { 
+            margin-bottom: 10px; 
+            font-size: 1.2em; 
+            min-height: 1.5em;
+            color: #00FF00; /* Green for game messages */
+        }
+        .controls {
+            display: flex; /* Align buttons in a row */
+            gap: 10px; /* Space between buttons */
+            margin-top: 20px; /* Space above control buttons */
+        }
+        .controls button, .controls a button { 
+            padding: 10px 15px; 
+            font-size: 1em; 
+            cursor: pointer; 
+            background-color: #111111;
+            color: #00FF00;
+            border: 1px solid #00FF00;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        .controls button:hover, .controls a button:hover {
+            background-color: #00FF00;
+            color: #000000;
+        }
+        .controls a { /* Style for the link acting as a button container */
+            text-decoration: none;
+        }
+        .flashes { 
+            list-style-type: none; 
+            padding: 0; 
+            margin-bottom: 15px; 
+            width: 80%; 
+            max-width: 600px; 
+            text-align: center;
+        }
+        .flashes li { 
+            padding: 10px; 
+            margin-bottom: 5px; 
+            border-radius: 0px; /* Sharp corners */
+            font-size: 0.9em;
+        }
+        .flashes .error { 
+            background-color: #330000; /* Dark red background */
+            color: #FF6666; /* Light red text */
+            border: 1px solid #FF0000; /* Red border */
+        }
+        .flashes .success { 
+            background-color: #002200; /* Dark green background */
+            color: #66FF66; /* Light green text */
+            border: 1px solid #00FF00; /* Green border */
+        }
+        .flashes .info { 
+            background-color: #000033; /* Dark blue background */
+            color: #6666FF; /* Light blue text */
+            border: 1px solid #0000FF; /* Blue border */
+        }
+        .flashes .warning { 
+            background-color: #333300; /* Dark yellow background */
+            color: #FFFF66; /* Light yellow text */
+            border: 1px solid #FFFF00; /* Yellow border */
+        }
+
+        /* Add layout for side panels */
+        .game-layout {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .side-panel {
+            width: 420px;      /* fixed width */
+            height: 525px;     /* fixed height */
+            margin: 50px 15px 0; /* 50px from top */
+            background-color: #0a0a0a;
+            border: 1px solid #00FF00;
+            padding: 10px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+        }
+        .side-panel h3 {
+            color: #00FF00;
+            margin: 0 0 10px;
+            font-size: 1.2em;
+            flex-shrink: 0;
+        }
+        .side-panel pre {
+            flex-grow: 1;
+            background-color: #111;
+            color: #0F0;
+            padding: 8px;
+            border: 1px dashed #00DD00;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-size: 0.9em;
+            min-height: 0;
+        }
+
+        /* Custom scrollbar styling for side-panel pre */
+        .side-panel pre::-webkit-scrollbar {
+            width: 8px;
+        }
+        .side-panel pre::-webkit-scrollbar-track {
+            background: #111;          /* match panel background */
+        }
+        .side-panel pre::-webkit-scrollbar-thumb {
+            background-color: #00FF00; /* bright green thumb */
+            border-radius: 4px;
+            border: 1px solid #0A0;    /* darker green border */
+        }
+
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* make the model vs model text smaller */
+        .main-content h1 {
+            color: #00FF00; /* existing color */
+            font-size: 1.5em; /* reduced from default */
+            margin: 0 0 10px; /* optional spacing */
+        }
+
+        /* history navigation controls */
+        .history-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 8px;
+            gap: 10px;
+        }
+        .history-controls a button {
+            background-color: #111;
+            color: #00FF00;
+            border: 1px solid #00FF00;
+            padding: 4px 8px;
+            cursor: pointer;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        .history-controls a button:disabled {
+            color: #444;
+            border-color: #444;
+            cursor: default;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-layout">
+        <div class="side-panel">
+            <h3>AI ({{ PLAYER_X }}) Thinking:</h3>
+            <pre>{{ history_X[idx_X] if idx_X>=0 else 'No thoughts yet.' }}</pre>
+            <div class="history-controls">
+                <a href="{{ url_for('navigate_history', player_symbol=PLAYER_X, direction='prev') }}">
+                    <button {% if not can_prev_X %}disabled{% endif %}>&lt;</button>
+                </a>
+                <span>{{ idx_X+1 if idx_X>=0 else 0 }} / {{ history_len_X }}</span>
+                <a href="{{ url_for('navigate_history', player_symbol=PLAYER_X, direction='next') }}">
+                    <button {% if not can_next_X %}disabled{% endif %}>&gt;</button>
+                </a>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <h1>{{ player_X_display }} vs {{ player_O_display }}</h1>
+
+            <div class="message">{{ message }}</div>
+
+            <div class="board">
+                {% for r in range(3) %}
+                    {% for c in range(3) %}
+                        {% if board[r][c] == ' ' and not game_over %}
+                            <a href="{{ url_for('player_move', row=r, col=c) }}" class="cell">{{ board[r][c] }}</a>
+                        {% else %}
+                            <div class="cell {{ board[r][c] }}">{{ board[r][c] }}</div>
+                        {% endif %}
+                    {% endfor %}
+                {% endfor %}
+            </div>
+
+            <div class="controls">
+                <form action="{{ url_for('reset_game') }}" method="get" style="margin:0;">
+                    <button type="submit">Reset Game</button>
+                </form>
+                <a href="{{ url_for('menu') }}"><button>Back to Menu</button></a>
+            </div>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+              {% if messages %}
+                <ul class="flashes">
+                {% for category, message_text in messages %}
+                  <li class="{{ category }}">{{ message_text }}</li>
+                {% endfor %}
+                </ul>
+              {% endif %}
+            {% endwith %}
+        </div>
+
+        <div class="side-panel">
+            <h3>AI ({{ PLAYER_O }}) Thinking:</h3>
+            <pre>{{ history_O[idx_O] if idx_O>=0 else 'No thoughts yet.' }}</pre>
+            <div class="history-controls">
+                <a href="{{ url_for('navigate_history', player_symbol=PLAYER_O, direction='prev') }}">
+                    <button {% if not can_prev_O %}disabled{% endif %}>&lt;</button>
+                </a>
+                <span>{{ idx_O+1 if idx_O>=0 else 0 }} / {{ history_len_O }}</span>
+                <a href="{{ url_for('navigate_history', player_symbol=PLAYER_O, direction='next') }}">
+                    <button {% if not can_next_O %}disabled{% endif %}>&gt;</button>
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

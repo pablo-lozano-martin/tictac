@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Players - Tic Tac Toe</title>
+    <style>
+        body { 
+            font-family: 'Courier New', Courier, monospace; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center;
+            align-items: center; 
+            min-height: 100vh;
+            margin: 0; 
+            background-color: #000000;
+            color: #FFFFFF;
+        }
+        h1 {
+            color: #00FF00;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+        .player-selection-area {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .player-selector {
+            margin: 15px;
+            padding: 15px;
+            border: 1px solid #00FF00;
+            background-color: #111;
+            min-width: 250px; /* Ensure buttons have some width */
+            display: inline-block; /* Allow side-by-side for future if needed */
+        }
+        .player-selector p {
+            color: #00FF00;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+        .player-selector a button {
+            padding: 10px 20px;
+            font-size: 1em;
+            background-color: #222;
+            color: #FFFFFF;
+            border: 1px solid #FFFFFF;
+            cursor: pointer;
+            width: 100%; /* Make button fill selector width */
+        }
+        .player-selector a button:hover {
+            background-color: #00FF00;
+            color: #000;
+            border-color: #000;
+        }
+
+        .controls a button { 
+            padding: 15px 30px; 
+            font-size: 1.2em; 
+            cursor: pointer; 
+            background-color: #111111;
+            color: #00FF00;
+            border: 2px solid #00FF00;
+            font-family: 'Courier New', Courier, monospace;
+            text-decoration: none;
+            margin: 10px;
+        }
+        .controls a button:hover {
+            background-color: #00FF00;
+            color: #000000;
+        }
+        .controls a {
+            text-decoration: none;
+        }
+        .controls {
+            display: flex;
+            flex-direction: row;
+        }
+    </style>
+</head>
+<body>
+    <h1>Select Players</h1>
+
+    <div class="player-selection-area">
+        <div class="player-selector">
+            <p>Player 1 (X)</p>
+            <a href="{{ url_for('toggle_player_type', player_symbol='X') }}">
+                <button type="button">{{ player_X_type }}</button>
+            </a>
+        </div>
+        <div class="player-selector">
+            <p>Player 2 (O)</p>
+            <a href="{{ url_for('toggle_player_type', player_symbol='O') }}">
+                <button type="button">{{ player_O_type }}</button>
+            </a>
+        </div>
+    </div>
+
+    <div class="controls">
+        <a href="{{ url_for('start_selected_game') }}"><button>Start Game</button></a>
+        <a href="{{ url_for('menu') }}"><button>Back to Menu</button></a>
+    </div>
+    
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <ul class="flashes" style="position: fixed; bottom: 10px; width: 80%; max-width: 600px; left: 50%; transform: translateX(-50%);">
+        {% for category, message_text in messages %}
+          <li class="{{ category }}" style="padding: 10px; margin-bottom: 5px; border-radius: 0; font-size: 0.9em; background-color: #111; border: 1px solid #0F0;">{{ message_text }}</li>
+        {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+</body>
+</html>
