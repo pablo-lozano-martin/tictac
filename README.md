@@ -20,7 +20,6 @@ A web-based Tic Tac Toe game where you can play against different AI models, or 
 - Python 3.7+
 - Flask
 - Ollama (for running local LLMs)
-- Internet connection (for API calls)
 
 ## 🛠️ Setup
 
